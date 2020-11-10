@@ -1,0 +1,270 @@
+{
+    "whois.cat": {
+        "encoding": "utf-8",
+        "quirk": "-C UTF-8 {{data}}"
+    },
+    "whois.conac.cn": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.corenic.net": {
+        "encoding": "utf-8",
+        "quirk": "-C UTF-8 {{data}}"
+    },
+    "whois.online.rs.corenic.net": {
+        "encoding": "utf-8",
+        "quirk": "-C UTF-8 {{data}}"
+    },
+    "whois.site.rs.corenic.net": {
+        "encoding": "utf-8",
+        "quirk": "-C UTF-8 {{data}}"
+    },
+    "whois.lacnic.net": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.museum": {
+        "encoding": "utf-8",
+        "quirk": "-C UTF-8 {{data}}"
+    },
+    "whois.ripe.net": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.aeda.net.ae": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.ar": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.ax": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.registro.br": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.cira.ca": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.ch": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.cl": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.cnnic.cn": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "cwhois.cnnic.cn": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.cz": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.denic.de": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.enum.denic.de": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.dk-hostmaster.dk": {
+        "encoding": "utf-8",
+        "quirk": "--charset=utf-8 {{data}}"
+    },
+    "whois.tld.ee": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.eu": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.fi": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.fo": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.fr": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.hkirc.hk": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.hr": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.hu": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.ir": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.isnic.is": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.it": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.jprs.jp": {
+        "encoding": "iso-2022-jp",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.ad.jp": {
+        "encoding": "iso-2022-jp",
+        "quirk": "{{data}}"
+    },
+    "whois.domain.kg": {
+        "encoding": "cp1251",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.or.kr": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.kr": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.kz": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.li": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.domreg.lt": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.dns.lu": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.marnet.mk": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.mu": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.norid.no": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.iis.nu": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.registry.om": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.registry.pf": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.dns.pt": {
+        "encoding": "iso-8859-1",
+        "quirk": "{{data}}"
+    },
+    "whois.registry.qa": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.re": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.rnids.rs": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.net.sa": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.iis.se": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.sgnic.sg": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.tld.sy": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.thains.co.th": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.ati.tn": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.tr": {
+        "encoding": "iso-8859-9",
+        "quirk": "{{data}}"
+    },
+    "whois.twnic.net.tw": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.biz.ua": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.co.ua": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.pp.ua": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.ua": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.org.uy": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.wf": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.yt": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.xn--otu796d": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    }
+}

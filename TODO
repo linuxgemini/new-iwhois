@@ -1,0 +1,4 @@
+- Write the damn web app
+  - implement ratelimits
+  - think about caching
+    - maybe redis?
