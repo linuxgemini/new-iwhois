@@ -52,6 +52,9 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
             </br>example route for standard recursive whois: <a href="w/google.com">/w/google.com</a>
             </br>example route for whois for RIPE (-B flag is already added): <a href="ripe/ORG-TCA23-RIPE">/ripe/ORG-TCA23-RIPE</a>
         </p>
+        </br>
+        </br>
+        <p>Powered by <a href="https://github.com/linuxgemini/new-iwhois">new-iwhois</a></p>
     </body>
 </html>`);
 };
