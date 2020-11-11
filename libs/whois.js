@@ -56,8 +56,8 @@ class whoisClient {
                 let stripped = this.__strStrip(line.split(" ").slice(1).join(" "));
                 whoisServersRaw.push(stripped);
             }
-            if (this.__strStrip(line).match(/^\w+ WHOIS Server: /)) {
-                let strippassone = this.__strStrip(line).replace(/^\w+ WHOIS Server: /, "");
+            if (this.__strStrip(line).match(/^\w+ WHOIS Server: /i)) {
+                let strippassone = this.__strStrip(line).replace(/^\w+ WHOIS Server: /i, "");
                 whoisServersRaw.push(strippassone);
             }
         }
@@ -82,7 +82,7 @@ class whoisClient {
 
             const client = new net.Socket();
 
-            client.setTimeout(5000);
+            client.setTimeout(3000);
 
             client.on("data", (chunk) => {
                 data = Buffer.concat([data, chunk]);
@@ -128,20 +128,32 @@ class whoisClient {
     /**
      * @param {string} data
      * @param {number} recursed
-     * @param {string} currHost
+     * @param {string?} currHost
+     * @param {string?} prevHost
+     * @param {string?} prevData
      */
-    async queryRecursive(data, recursed = 0, currHost = "") {
+    async queryRecursive(data, recursed = 0, currHost = null, prevHost = null, prevData = null) {
         let host = (recursed > 0 ? currHost : "whois.iana.org");
         let fixedData = this.__quirkPass(host, data);
 
-        let res = await this.__makeQuery(host, fixedData);
+        let res;
+
+        try {
+            res = await this.__makeQuery(host, fixedData);
+        } catch (e) {
+            if (prevData) {
+                return `%#% ${e.message} on host ${host}, returning data from ${prevHost}\n\n${prevData}`;
+            } else {
+                throw e;
+            }
+        }
 
         let refs = this.__returnRefers(res);
 
         if (refs[0] && refs[0] !== host) {
-            return await this.queryRecursive(data, (recursed + 1), refs[0]);
+            return await this.queryRecursive(data, (recursed + 1), refs[0], host, res.replace(/\r\n/g, "\n"));
         } else {
-            return res;
+            return res.replace(/\r\n/g, "\n");
         }
     }
 
