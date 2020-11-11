@@ -1,0 +1,9 @@
+{
+    "port": 58444,
+    "redisConfig": {
+        "host": "redis",
+        "port": 6379,
+        "enable_offline_queue": false,
+        "db": 1
+    }
+}

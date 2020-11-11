@@ -1,6 +1,6 @@
 {
   "name": "new-iwhois",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "New Generation Interactive WHOIS",
   "engines": {
     "node": ">=12"
@@ -33,6 +33,8 @@
   "dependencies": {
     "chardet": "^1.3.0",
     "express": "^4.17.1",
-    "iconv-lite": "^0.6.2"
+    "iconv-lite": "^0.6.2",
+    "rate-limiter-flexible": "^2.1.13",
+    "redis": "^3.0.2"
   }
 }
