@@ -106,8 +106,8 @@ const main = async () => {
     rateLimiter = new RateLimiterRedis({
         storeClient: redisClient,
         keyPrefix: "middleware",
-        points: 2, // 2 requests
-        duration: 1, // per 1 second by IP
+        points: 4, // 2 requests
+        duration: 10, // per 1 second by IP
     });
 
     /**
