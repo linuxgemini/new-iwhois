@@ -40,7 +40,8 @@ class whoisClient {
      * @returns {string[]}
      */
     __returnRefers(data) {
-        let dataLines = data.split("\n");
+	let splitter = (data.includes("\r\n") ? "\r\n" : "\n");
+        let dataLines = data.split(splitter);
 
         /** @type {string[]} */
         let whoisServersRaw = [];
@@ -54,6 +55,10 @@ class whoisClient {
             if (line.startsWith("refer:") || line.startsWith("whois:") || line.startsWith("ReferralServer:")) {
                 let stripped = this.__strStrip(line.split(" ").slice(1).join(" "));
                 whoisServersRaw.push(stripped);
+            }
+            if (this.__strStrip(line).match(/^\w+ WHOIS Server: /)) {
+                let strippassone = this.__strStrip(line).replace(/^\w+ WHOIS Server: /, "");
+                whoisServersRaw.push(strippassone);
             }
         }
 
@@ -77,7 +82,7 @@ class whoisClient {
 
             const client = new net.Socket();
 
-            client.setTimeout(3000);
+            client.setTimeout(5000);
 
             client.on("data", (chunk) => {
                 data = Buffer.concat([data, chunk]);
@@ -102,7 +107,7 @@ class whoisClient {
                 host,
                 port: 43
             }, () => {
-                client.write(`${querydata}\n`);
+                client.write(`${querydata}\r\n`);
             });
         });
     }
@@ -133,7 +138,7 @@ class whoisClient {
 
         let refs = this.__returnRefers(res);
 
-        if (refs[0]) {
+        if (refs[0] && refs[0] !== host) {
             return await this.queryRecursive(data, (recursed + 1), refs[0]);
         } else {
             return res;
