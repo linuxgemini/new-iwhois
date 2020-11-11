@@ -40,7 +40,7 @@ class whoisClient {
      * @returns {string[]}
      */
     __returnRefers(data) {
-	let splitter = (data.includes("\r\n") ? "\r\n" : "\n");
+        let splitter = (data.includes("\r\n") ? "\r\n" : "\n");
         let dataLines = data.split(splitter);
 
         /** @type {string[]} */
