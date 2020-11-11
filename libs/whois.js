@@ -62,9 +62,8 @@ class whoisClient {
             }
         }
 
-        for (const index in whoisServersRaw) {
-            let server = whoisServersRaw[index];
-            if (server.startsWith("rwhois://")) continue;
+        for (const server of whoisServersRaw) {
+            if (server.startsWith("rwhois://") || server.includes(":4321")) continue;
             whoisServers.push(server.replace("whois://", ""));
         }
 
