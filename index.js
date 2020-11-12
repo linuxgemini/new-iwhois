@@ -61,7 +61,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
             <option value="afrinic">afrinic</option>
             <option value="apnic">apnic</option>
             <option value="lacnic">lacnic</option>
-            <option value="radb" onclick="document.getElementById('whoisval').placeholder='1.1.1.0/24'>radb</option>
+            <option value="radb" onclick="document.getElementById('whoisval').placeholder='1.1.1.0/24'">radb</option>
         </select>
         <label for="whoisval">Target:</label>
         <input type="text" id="whoisval" placeholder="google.com" required>
