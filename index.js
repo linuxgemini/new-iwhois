@@ -69,6 +69,14 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         </br>
         </br>
         <p>Powered by <a href="https://github.com/linuxgemini/new-iwhois">new-iwhois</a></p>
+        <script>
+            var node = document.getElementsById("whoisval");
+            node.addEventListener("keyup", function(event) {
+                if (event.key === "Enter") {
+                    // Do work
+                }
+            });
+        </script>
     </body>
 </html>`);
 };
