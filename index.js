@@ -43,6 +43,11 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
 <html>
     <head>
         <title>linuxgemini's simple whois server</title>
+        <script>
+            function setPlaceholder(value) {
+                document.getElementById('whoisval').placeholder = value.toString();
+            }
+        </script>
     </head>
     <body>
         <h2>simple whois server</h2>
@@ -54,17 +59,17 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         </p>
         </br>
         <label for="method">WHOIS Host:</label>
-        <select id="method" required>
-            <option value="w" onclick="document.getElementById('whoisval').placeholder='google.com'" selected>recursive</option>
-            <option value="ripe" onclick="document.getElementById('whoisval').placeholder='ORG-TCA23-RIPE'">ripe</option>
-            <option value="arin" onclick="document.getElementById('whoisval').placeholder='a 174'">arin</option>
+        <select id="method">
+            <option value="w" onclick="setPlaceholder('google.com')" selected>recursive</option>
+            <option value="ripe" onclick="setPlaceholder('ORG-TCA23-RIPE')>ripe</option>
+            <option value="arin" onclick="setPlaceholder('a 174')">arin</option>
             <option value="afrinic">afrinic</option>
             <option value="apnic">apnic</option>
             <option value="lacnic">lacnic</option>
-            <option value="radb" onclick="document.getElementById('whoisval').placeholder='1.1.1.0/24'">radb</option>
+            <option value="radb" onclick="setPlaceholder('1.1.1.0/24')">radb</option>
         </select>
         <label for="whoisval">Target:</label>
-        <input type="text" id="whoisval" placeholder="google.com" required>
+        <input type="text" id="whoisval" value="">
         <input type="submit" id="postit" onclick="if (document.getElementById('whoisval').value !== '') window.location.href=document.getElementById('method').value+'/'+document.getElementById('whoisval').value">
         </br>
         </br>
