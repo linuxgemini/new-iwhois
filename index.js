@@ -61,7 +61,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         <label for="method">WHOIS Host:</label>
         <select id="method">
             <option value="w" onclick="setPlaceholder('google.com')" selected>recursive</option>
-            <option value="ripe" onclick="setPlaceholder('ORG-TCA23-RIPE')>ripe</option>
+            <option value="ripe" onclick="setPlaceholder('ORG-TCA23-RIPE')">ripe</option>
             <option value="arin" onclick="setPlaceholder('a 174')">arin</option>
             <option value="afrinic">afrinic</option>
             <option value="apnic">apnic</option>
