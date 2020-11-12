@@ -53,7 +53,23 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
             </br>example route for whois for RIPE (-B flag is already added): <a href="ripe/ORG-TCA23-RIPE">/ripe/ORG-TCA23-RIPE</a>
         </p>
         </br>
+		<label>WHOIS Host:
+			<select id="method" required>
+				<option value="w" onclick="document.getElementById('whoisval').placeholder='google.com'" selected>recursive</option>
+				<option value="ripe" onclick="document.getElementById('whoisval').placeholder='ORG-TCA23-RIPE'">ripe</option>
+				<option value="arin" onclick="document.getElementById('whoisval').placeholder='a 174'">arin</option>
+				<option value="afrinic">afrinic</option>
+				<option value="apnic">apnic</option>
+				<option value="lacnic">lacnic</option>
+				<option value="radb" onclick="document.getElementById('whoisval').placeholder='1.1.1.0/24'>radb</option>
+			</select>
+		</label>
+		<label>Target:
+			<input type="text" id="whoisval" placeholder="google.com" required>
+		</label>
+		<input type="submit" id="postit" onclick="window.location.href=document.getElementById('method').value+'/'+document.getElementById('whoisval').value">
         </br>
+		</br>
         <p>Powered by <a href="https://github.com/linuxgemini/new-iwhois">new-iwhois</a></p>
     </body>
 </html>`);
