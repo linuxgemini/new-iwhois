@@ -70,7 +70,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         </br>
         <p>Powered by <a href="https://github.com/linuxgemini/new-iwhois">new-iwhois</a></p>
         <script>
-            var node = document.getElementsById("whoisval");
+            var node = document.getElementById("whoisval");
             node.addEventListener("keyup", function(event) {
                 if (event.key === "Enter") {
                     window.location.href = document.getElementById("method").value + "/" + document.getElementById("whoisval").value;
