@@ -200,6 +200,15 @@ class whoisClient {
 
         return res;
     }
+
+    async queryRADb(data) {
+        let host = "whois.radb.net";
+        let fixedData = this.__quirkPass(host, data);
+
+        let res = await this.__makeQuery(host, fixedData);
+
+        return res;
+    }
 }
 
 module.exports = whoisClient;

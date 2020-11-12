@@ -87,6 +87,9 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
             case "lacnic":
                 result = await whois.queryLACNIC(req.params["whoisValue"]);
                 break;
+            case "radb":
+                result = await whois.queryRADb(req.params["whoisValue"]);
+                break;
             default:
                 throw new Error("Scripting Error");
         }
@@ -145,6 +148,7 @@ const main = async () => {
     app.get("/afrinic/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "afrinic"));
     app.get("/apnic/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "apnic"));
     app.get("/lacnic/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "lacnic"));
+    app.get("/radb/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "radb"));
 
     app.listen(config.port, () => {
         console.log(`Server listening at port ${config.port}`);
