@@ -94,6 +94,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
  */
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
     let result;
+    let errored = false;
     try {
         switch (queryType) {
             case "recursive":
@@ -122,10 +123,16 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         }
     } catch (error) {
         result = error.message;
+        errored = true;
     }
 
-    res.set("Content-Type", "text/plain; charset=utf-8");
-    return res.status(200).send(result);
+    if (errored && !(result.includes("%#%") || result.toLowerCase().includes("connection timeout"))) {
+        res.set("Content-Type", "text/plain; charset=utf-8");
+        return res.status(500).send(result);
+    } else {
+        res.set("Content-Type", "text/plain; charset=utf-8");
+        return res.status(200).send(result);
+    }
 };
 
 const main = async () => {
