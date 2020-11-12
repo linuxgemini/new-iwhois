@@ -174,6 +174,7 @@ const main = async () => {
     app.use(rateLimiterMiddleware);
     app.enable("trust proxy");
     app.disable("x-powered-by");
+    app.disable("query parser");
 
     app.get("/", handleRoot);
     app.get("/w/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "recursive"));
