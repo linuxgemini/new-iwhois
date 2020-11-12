@@ -65,7 +65,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         </select>
         <label for="whoisval">Target:</label>
         <input type="text" id="whoisval" placeholder="google.com" required>
-        <input type="submit" id="postit" onclick="window.location.href=document.getElementById('method').value+'/'+document.getElementById('whoisval').value">
+        <input type="submit" id="postit" onclick="if (document.getElementById('whoisval').value !== '') window.location.href=document.getElementById('method').value+'/'+document.getElementById('whoisval').value">
         </br>
         </br>
         <p>Powered by <a href="https://github.com/linuxgemini/new-iwhois">new-iwhois</a></p>
@@ -73,7 +73,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
             var node = document.getElementById("whoisval");
             node.addEventListener("keyup", function(event) {
                 if (event.key === "Enter") {
-                    window.location.href = document.getElementById("method").value + "/" + document.getElementById("whoisval").value;
+                    if (document.getElementById("whoisval").value !== "") window.location.href = document.getElementById("method").value + "/" + document.getElementById("whoisval").value;
                 }
             });
         </script>
