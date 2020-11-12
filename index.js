@@ -73,7 +73,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
             var node = document.getElementsById("whoisval");
             node.addEventListener("keyup", function(event) {
                 if (event.key === "Enter") {
-                    // Do work
+                    window.location.href = document.getElementById("method").value + "/" + document.getElementById("whoisval").value;
                 }
             });
         </script>
