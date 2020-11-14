@@ -178,13 +178,13 @@ const main = async () => {
     app.set("env", "production");
 
     app.get("/", handleRoot);
-    app.get("/w/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "recursive"));
-    app.get("/ripe/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "ripe"));
-    app.get("/arin/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "arin"));
-    app.get("/afrinic/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "afrinic"));
-    app.get("/apnic/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "apnic"));
-    app.get("/lacnic/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "lacnic"));
-    app.get("/radb/:whoisValue*", (req, res, next) => handleQuery(req, res, next, "radb"));
+    app.get("/w/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "recursive"));
+    app.get("/ripe/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "ripe"));
+    app.get("/arin/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "arin"));
+    app.get("/afrinic/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "afrinic"));
+    app.get("/apnic/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "apnic"));
+    app.get("/lacnic/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "lacnic"));
+    app.get("/radb/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "radb"));
 
     app.listen(config.port, () => {
         console.log(`Server listening at port ${config.port}`);
