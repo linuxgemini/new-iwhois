@@ -101,9 +101,9 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
             <option value="w" onclick="setPlaceholder('google.com')" selected>recursive</option>
             <option value="ripe" onclick="setPlaceholder('ORG-TCA23-RIPE')">ripe</option>
             <option value="arin" onclick="setPlaceholder('a 174')">arin</option>
-            <option value="afrinic">afrinic</option>
-            <option value="apnic">apnic</option>
-            <option value="lacnic">lacnic</option>
+            <option value="afrinic" onclick="setPlaceholder('AS33762')">afrinic</option>
+            <option value="apnic" onclick="setPlaceholder('AS131073')">apnic</option>
+            <option value="lacnic" onclick="setPlaceholder('AS8167')">lacnic</option>
             <option value="radb" onclick="setPlaceholder('1.1.1.0/24')">radb</option>
         </select>
         <label for="whoisval">Target:</label>
