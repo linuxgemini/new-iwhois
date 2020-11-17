@@ -63,7 +63,7 @@ const handleLog = (req, res, next, skipNext = false) => {
  * @param {express.NextFunction} next
  */
 const handleRobots = (req, res, next) => { // eslint-disable-line no-unused-vars
-    res.set("Content-Type", "text/html; charset=utf-8");
+    res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(`User-agent: *
 Allow: /$
 Disallow: /`);
