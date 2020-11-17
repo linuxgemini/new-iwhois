@@ -19,7 +19,7 @@ const { RateLimiterRedis } = require("rate-limiter-flexible");
 
 const express = require("express");
 
-let config, redisClient, rateLimiter, rateLimiterMiddleware, app;
+let config, redisClient, rateLimitPoints, rateLimitDuration, rateLimiter, rateLimiterMiddleware, app;
 
 /**
  * @param {Error} err
@@ -32,6 +32,31 @@ const exitWithError = (err) => {
     }, 1000);
 };
 
+const constructIP = (reqip, reqips) => {
+    let xfwip = (reqips && Array.isArray(reqips) ? reqips[0] : reqip);
+    let host = (xfwip !== reqip ? xfwip : reqip);
+    let hostLog = (xfwip !== reqip ? (xfwip + "," + reqip) : reqip);
+
+    return {
+        host,
+        hostLog
+    };
+};
+
+/**
+ * @param {express.Request} req
+ * @param {express.Response} res
+ * @param {express.NextFunction} next
+ * @param {boolean} skipNext
+ */
+const handleLog = (req, res, next, skipNext = false) => {
+        let { host, hostLog } = constructIP(req.ip, req.ips);
+        let isRatelimited = (res.statusCode === 429);
+
+        console.log(`${Math.round(Date.now() / 1000)} ${hostLog} ${req.method} ${res.statusCode} ${req.hostname} ${req.originalUrl} '{rateLimited:${isRatelimited},protocol:"${req.protocol}"}'`);
+        if (!isRatelimited && !skipNext) next();
+};
+
 /**
  * @param {express.Request} req
  * @param {express.Response} res
@@ -39,7 +64,7 @@ const exitWithError = (err) => {
  */
 const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
     res.set("Content-Type", "text/html; charset=utf-8");
-    return res.status(200).send(`<!DOCTYPE html>
+    res.status(200).send(`<!DOCTYPE html>
 <html>
     <head>
         <title>linuxgemini's simple whois server</title>
@@ -84,6 +109,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         </script>
     </body>
 </html>`);
+    handleLog(req, res, next, true);
 };
 
 /**
@@ -94,7 +120,6 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
  */
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
     let result;
-    let errored = false;
     try {
         switch (queryType) {
             case "recursive":
@@ -123,16 +148,14 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         }
     } catch (error) {
         result = error.message;
-        errored = true;
+        if (!(result.includes("%#%") || result.toLowerCase().includes("connection timeout"))) {
+            throw error;
+        }
     }
-
-    if (errored && !(result.includes("%#%") || result.toLowerCase().includes("connection timeout"))) {
-        res.set("Content-Type", "text/plain; charset=utf-8");
-        return res.status(500).send(result);
-    } else {
-        res.set("Content-Type", "text/plain; charset=utf-8");
-        return res.status(200).send(result);
-    }
+    
+    res.set("Content-Type", "text/plain; charset=utf-8");
+    res.status(200).send(result);
+    handleLog(req, res, next, true);
 };
 
 const main = async () => {
@@ -143,11 +166,14 @@ const main = async () => {
     }
 
     redisClient = redis.createClient(config.redisConfig);
+
+    rateLimitPoints = 4; // requests
+    rateLimitDuration = 10; // seconds
     rateLimiter = new RateLimiterRedis({
         storeClient: redisClient,
         keyPrefix: "middleware",
-        points: 4, // 2 requests
-        duration: 10, // per 1 second by IP
+        points: rateLimitPoints,
+        duration: rateLimitDuration,
     });
 
     /**
@@ -156,27 +182,44 @@ const main = async () => {
      * @param {express.NextFunction} next
      */
     rateLimiterMiddleware = (req, res, next) => {
-        let reqip = req.ip;
-        let xfwip = (req.headers["X-Forwarded-For"] && req.headers["X-Forwarded-For"].includes(", ") ? req.headers.forwarded.replace(/\s+/g, "").split(",")[0] : req.headers.forwarded);
-        let host = (reqip !== xfwip ? xfwip : reqip);
+        let { host } = constructIP(req.ip, req.ips);
 
         rateLimiter.consume(host)
-            .then(() => {
+            .then((rateLimiterRes) => {
+                res.set("Retry-After", (rateLimiterRes.msBeforeNext / 1000));
+                res.set("X-Ratelimit-Limit", rateLimitPoints);
+                res.set("X-Ratelimit-Remaining", rateLimiterRes.remainingPoints);
+                res.set("X-Ratelimit-Reset", Math.round(new Date(Date.now() + rateLimiterRes.msBeforeNext).getTime() / 1000));
                 next();
             })
-            .catch(() => {
+            .catch((rateLimiterRes) => {
+                res.set("Retry-After", (rateLimiterRes.msBeforeNext / 1000));
+                res.set("X-Ratelimit-Limit", rateLimitPoints);
+                res.set("X-Ratelimit-Remaining", rateLimiterRes.remainingPoints);
+                res.set("X-Ratelimit-Reset", Math.round(new Date(Date.now() + rateLimiterRes.msBeforeNext).getTime() / 1000));
+                res.set("Content-Type", "text/plain; charset=utf-8");
                 res.status(429).send("Too Many Requests");
+		handleLog(req, res, next);
             });
     };
 
     app = express();
 
-    app.use(rateLimiterMiddleware);
     app.enable("trust proxy");
     app.disable("x-powered-by");
     app.set("query parser", false);
     app.set("env", "production");
 
+    app.use((req, res, next) => {
+        res.set("X-Powered-By", "new-iwhois");
+        next();
+    });
+    app.use("/favicon.ico", (req, res, next) => {
+        res.set("Content-Type", "text/plain; charset=utf-8");
+        res.status(404).send("Sorry, can't find that!");
+        handleLog(req, res, next, true);
+    });
+    app.use(rateLimiterMiddleware);
     app.get("/", handleRoot);
     app.get("/w/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "recursive"));
     app.get("/ripe/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "ripe"));
@@ -185,10 +228,29 @@ const main = async () => {
     app.get("/apnic/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "apnic"));
     app.get("/lacnic/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "lacnic"));
     app.get("/radb/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "radb"));
+    app.use((req, res, next) => {
+        res.set("Content-Type", "text/plain; charset=utf-8");
+        res.status(404).send("Sorry, can't find that!");
+        next();
+    });
+    app.use((err, req, res, next) => {
+        console.error(err.stack);
+        res.set("Content-Type", "text/plain; charset=utf-8");
+        res.status(500).send("Something broke!");
+        next();
+    });
+    app.use(handleLog);
 
     app.listen(config.port, () => {
-        console.log(`Server listening at port ${config.port}`);
+        console.log(`${Math.round(Date.now() / 1000)} "Server listening at port ${config.port}"`);
     });
 };
+
+process.on("SIGTERM", () => {
+    console.warn(`${Math.round(Date.now() / 1000)} "SIGTERM signal received: closing HTTP server"`);
+    if (app) app.close(() => {
+        console.log(`${Math.round(Date.now() / 1000)} HTTP server closed`);
+    });
+});
 
 main();
