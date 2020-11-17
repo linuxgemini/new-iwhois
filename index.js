@@ -62,6 +62,19 @@ const handleLog = (req, res, next, skipNext = false) => {
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
+const handleRobots = (req, res, next) => { // eslint-disable-line no-unused-vars
+    res.set("Content-Type", "text/html; charset=utf-8");
+    res.status(200).send(`User-agent: *
+Allow: /$
+Disallow: /`);
+    handleLog(req, res, next, true);
+};
+
+/**
+ * @param {express.Request} req
+ * @param {express.Response} res
+ * @param {express.NextFunction} next
+ */
 const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
     res.set("Content-Type", "text/html; charset=utf-8");
     res.status(200).send(`<!DOCTYPE html>
@@ -220,6 +233,7 @@ const main = async () => {
         handleLog(req, res, next, true);
     });
     app.use(rateLimiterMiddleware);
+    app.get("/robots.txt", handleRobots);
     app.get("/", handleRoot);
     app.get("/w/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "recursive"));
     app.get("/ripe/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "ripe"));
