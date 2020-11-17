@@ -189,14 +189,14 @@ const main = async () => {
                 res.set("Retry-After", (rateLimiterRes.msBeforeNext / 1000));
                 res.set("X-Ratelimit-Limit", rateLimitPoints);
                 res.set("X-Ratelimit-Remaining", rateLimiterRes.remainingPoints);
-                res.set("X-Ratelimit-Reset", Math.round(new Date(Date.now() + rateLimiterRes.msBeforeNext).getTime() / 1000));
+                res.set("X-Ratelimit-Reset", Math.round((Date.now() + rateLimiterRes.msBeforeNext) / 1000));
                 next();
             })
             .catch((rateLimiterRes) => {
                 res.set("Retry-After", (rateLimiterRes.msBeforeNext / 1000));
                 res.set("X-Ratelimit-Limit", rateLimitPoints);
                 res.set("X-Ratelimit-Remaining", rateLimiterRes.remainingPoints);
-                res.set("X-Ratelimit-Reset", Math.round(new Date(Date.now() + rateLimiterRes.msBeforeNext).getTime() / 1000));
+                res.set("X-Ratelimit-Reset", Math.round((Date.now() + rateLimiterRes.msBeforeNext) / 1000));
                 res.set("Content-Type", "text/plain; charset=utf-8");
                 res.status(429).send("Too Many Requests");
 		handleLog(req, res, next);
