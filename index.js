@@ -83,8 +83,37 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         <title>linuxgemini's simple whois server</title>
         <script>
             function setPlaceholder(value) {
-                document.getElementById('whoisval').placeholder = value.toString();
+                var whval = document.getElementById('whoisval');
+                switch (value) {
+                    case "w":
+                        whval.placeholder = "google.com";
+                        break;
+                    case "ripe":
+                        whval.placeholder = "ORG-TCA23-RIPE";
+                        break;
+                    case "arin":
+                        whval.placeholder = "a 174";
+                        break;
+                    case "afrinic":
+                        whval.placeholder = "AS33762";
+                        break;
+                    case "apnic":
+                        whval.placeholder = "AS131073";
+                        break;
+                    case "lacnic":
+                        whval.placeholder = "AS8167";
+                        break;
+                    case "radb":
+                        whval.placeholder = "1.1.1.0/24";
+                        break;
+                    default:
+                        whval.placeholder = "";
+                        break;
+                }
             }
+            window.addEventListener('load', function (event) {
+                document.getElementById('whoisval').placeholder = "google.com";
+            });
         </script>
     </head>
     <body>
@@ -97,14 +126,14 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         </p>
         </br>
         <label for="method">WHOIS Host:</label>
-        <select id="method">
-            <option value="w" onclick="setPlaceholder('google.com')" selected>recursive</option>
-            <option value="ripe" onclick="setPlaceholder('ORG-TCA23-RIPE')">ripe</option>
-            <option value="arin" onclick="setPlaceholder('a 174')">arin</option>
-            <option value="afrinic" onclick="setPlaceholder('AS33762')">afrinic</option>
-            <option value="apnic" onclick="setPlaceholder('AS131073')">apnic</option>
-            <option value="lacnic" onclick="setPlaceholder('AS8167')">lacnic</option>
-            <option value="radb" onclick="setPlaceholder('1.1.1.0/24')">radb</option>
+        <select id="method" onchange="setPlaceholder(this.value)">
+            <option value="w" selected>recursive</option>
+            <option value="ripe">ripe</option>
+            <option value="arin">arin</option>
+            <option value="afrinic">afrinic</option>
+            <option value="apnic">apnic</option>
+            <option value="lacnic">lacnic</option>
+            <option value="radb">radb</option>
         </select>
         <label for="whoisval">Target:</label>
         <input type="text" id="whoisval" value="">
