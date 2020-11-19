@@ -81,6 +81,8 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
 <html>
     <head>
         <title>linuxgemini's simple whois server</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
         <script>
             function setPlaceholder(value) {
                 var whval = document.getElementById('whoisval');
