@@ -198,7 +198,7 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
             throw error;
         }
     }
-    
+
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(result);
     handleLog(req, res, next, true);
@@ -296,7 +296,7 @@ const main = async () => {
 process.on("SIGTERM", () => {
     console.warn(`${Math.round(Date.now() / 1000)} "SIGTERM signal received: closing HTTP server"`);
     if (app) app.close(() => {
-        console.log(`${Math.round(Date.now() / 1000)} HTTP server closed`);
+        console.log(`${Math.round(Date.now() / 1000)} "HTTP server closed"`);
     });
 });
 
