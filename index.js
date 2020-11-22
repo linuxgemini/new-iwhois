@@ -8,9 +8,6 @@
 
 "use strict";
 
-const util = require("util");
-const sleep = util.promisify(setTimeout);
-
 const WHOIS = require("./libs/whois");
 const whois = new WHOIS();
 
@@ -50,11 +47,11 @@ const constructIP = (reqip, reqips) => {
  * @param {boolean} skipNext
  */
 const handleLog = (req, res, next, skipNext = false) => {
-        let { host, hostLog } = constructIP(req.ip, req.ips);
-        let isRatelimited = (res.statusCode === 429);
+    let { hostLog } = constructIP(req.ip, req.ips);
+    let isRatelimited = (res.statusCode === 429);
 
-        console.log(`${Math.round(Date.now() / 1000)} ${hostLog} ${req.method} ${res.statusCode} ${req.hostname} ${req.originalUrl} '{rateLimited:${isRatelimited},protocol:"${req.protocol}"}'`);
-        if (!isRatelimited && !skipNext) next();
+    console.log(`${Math.round(Date.now() / 1000)} ${hostLog} ${req.method} ${res.statusCode} ${req.hostname} ${req.originalUrl} '{rateLimited:${isRatelimited},protocol:"${req.protocol}"}'`);
+    if (!isRatelimited && !skipNext) next();
 };
 
 /**
@@ -83,11 +80,17 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         <title>linuxgemini's simple whois server</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <noscript>
+            <meta http-equiv="refresh" content="0; URL=noscript.txt" />
+        </noscript>
         <script>
             function setPlaceholder(value) {
                 var whval = document.getElementById('whoisval');
                 switch (value) {
                     case "w":
+                        whval.placeholder = "google.com";
+                        break;
+                    case "ww":
                         whval.placeholder = "google.com";
                         break;
                     case "ripe":
@@ -125,11 +128,16 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
             hello!
             </br>example route for standard recursive whois: <a href="w/google.com">/w/google.com</a>
             </br>example route for whois for RIPE (-B flag is already added): <a href="ripe/ORG-TCA23-RIPE">/ripe/ORG-TCA23-RIPE</a>
+            <noscript>
+                </br>Sorry, you have JavaScript disabled!
+                </br>Please visit <a href="noscript.txt">/noscript.txt</a> for detailed routes.
+            </noscript>
         </p>
         </br>
         <label for="method">WHOIS Host:</label>
         <select id="method" onchange="setPlaceholder(this.value)">
             <option value="w" selected>recursive</option>
+            <option value="ww" selected>recursive-verbose</option>
             <option value="ripe">ripe</option>
             <option value="arin">arin</option>
             <option value="afrinic">afrinic</option>
@@ -170,6 +178,9 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         switch (queryType) {
             case "recursive":
                 result = await whois.queryRecursive(req.params["whoisValue"]);
+                break;
+            case "recursive-verbose":
+                result = await whois.queryRecursiveVerbose(req.params["whoisValue"]);
                 break;
             case "ripe":
                 result = await whois.queryRIPE(req.params["whoisValue"]);
@@ -245,7 +256,7 @@ const main = async () => {
                 res.set("X-Ratelimit-Reset", Math.round((Date.now() + rateLimiterRes.msBeforeNext) / 1000));
                 res.set("Content-Type", "text/plain; charset=utf-8");
                 res.status(429).send("Too Many Requests");
-		handleLog(req, res, next);
+                handleLog(req, res, next);
             });
     };
 
@@ -267,8 +278,24 @@ const main = async () => {
     });
     app.use(rateLimiterMiddleware);
     app.get("/robots.txt", handleRobots);
+    app.get("/noscript.txt", (req, res, next) => {
+        res.set("Content-Type", "text/plain; charset=utf-8");
+        res.status(409).send(`Sorry, you have JavaScript disabled!
+
+Available routes:
+    /w/google.com           --> A recursive WHOIS on google.com
+    /ww/google.com          --> A verbose recursive WHOIS on google.com
+    /ripe/ORG-TCA23-RIPE    --> A WHOIS on ORG-TCA23-RIPE at RIPE DB
+    /arin/a%20174           --> A WHOIS on "a 174" at ARIN
+    /afrinic/AS33762        --> A WHOIS on AS33762 at AFRINIC
+    /apnic/AS131073         --> A WHOIS on AS131073 at APNIC
+    /lacnic/AS8167          --> A WHOIS on AS8167 at LACNIC
+    /radb/1.1.1.0/24        --> A WHOIS on 1.1.1.0/24 at RADb`);
+        handleLog(req, res, next, true);
+    });
     app.get("/", handleRoot);
     app.get("/w/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "recursive"));
+    app.get("/ww/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "recursive-verbose"));
     app.get("/ripe/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "ripe"));
     app.get("/arin/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "arin"));
     app.get("/afrinic/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "afrinic"));

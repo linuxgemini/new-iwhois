@@ -139,9 +139,10 @@ class whoisClient {
 
         try {
             res = await this.__makeQuery(host, fixedData);
+            res = res.replace(/\r\n/g, "\n").replace(/\n+$/g, "");
         } catch (e) {
             if (prevData) {
-                return `%#% ${e.message} on host ${host}, returning data from ${prevHost}\n\n${prevData}`;
+                return `%#% ${e.message} on host "${host}", returning data from "${prevHost}"\n\n${prevData}`;
             } else {
                 throw e;
             }
@@ -150,9 +151,44 @@ class whoisClient {
         let refs = this.__returnRefers(res);
 
         if (refs[0] && refs[0] !== host) {
-            return await this.queryRecursive(data, (recursed + 1), refs[0], host, res.replace(/\r\n/g, "\n"));
+            return await this.queryRecursive(data, (recursed + 1), refs[0], host, res);
         } else {
-            return res.replace(/\r\n/g, "\n");
+            return res;
+        }
+    }
+
+    /**
+     * @param {string} data
+     * @param {number} recursed
+     * @param {string?} currHost
+     * @param {string?} prevData
+     */
+    async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevData = null) {
+        let host = (recursed > 0 ? currHost : "whois.iana.org");
+        let fixedData = this.__quirkPass(host, data);
+
+        let res;
+
+        try {
+            res = await this.__makeQuery(host, fixedData);
+            res = res.replace(/\r\n/g, "\n").replace(/\n+$/g, "");
+        } catch (e) {
+            if (prevData) {
+                return `${prevData}\n%#% ${e.message} on host "${host}"`;
+            } else {
+                throw e;
+            }
+        }
+
+        let refs = this.__returnRefers(res);
+
+        if (prevData) res = `${prevData}\n\n\n${res}`;
+
+        if (refs[0] && refs[0] !== host) {
+            res = `${res}\n\n\n%#% Found referrals to '${JSON.stringify(refs)}', trying the first host ("${refs[0]}")`;
+            return await this.queryRecursiveVerbose(data, (recursed + 1), refs[0], res);
+        } else {
+            return res;
         }
     }
 
