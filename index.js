@@ -16,7 +16,7 @@ const { RateLimiterRedis } = require("rate-limiter-flexible");
 
 const express = require("express");
 
-let config, redisClient, rateLimitPoints, rateLimitDuration, rateLimiter, rateLimiterMiddleware, app;
+let config, ipAddresses, redisClient, rateLimitPoints, rateLimitDuration, rateLimiter, rateLimiterMiddleware, app;
 
 /**
  * @param {Error} err
@@ -211,6 +211,11 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         }
     }
 
+    for (const addr of ipAddresses) {
+        let reg = new RegExp(addr.replace(/\./g, "\\."), "g");
+        result = result.replace(reg, "REDACTED");
+    }
+
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(result);
     handleLog(req, res, next, true);
@@ -221,6 +226,27 @@ const main = async () => {
         config = require("./config.json");
     } catch (e) {
         return exitWithError(new Error("Config file not found! Please check config.json.example"));
+    }
+
+    ipAddresses = [];
+
+    for (const interfaceArray of Object.values(require("os").networkInterfaces())) {
+        for (const ipObj of interfaceArray) {
+            let addr = ipObj.address;
+
+            if (ipObj.internal) continue;
+            if (ipObj.family === "IPv4") {
+                if (addr.startsWith("10.") || addr.startsWith("192.168.")) continue;
+                if (addr.match(/^172\.(1[6-9]|2[0-9]|3[01])/)) continue;
+                if (addr.match(/^100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])/)) continue;
+            } else {
+                if (addr.startsWith("::ffff")) continue;
+                if (addr.startsWith("fc") || addr.startsWith("fd") || addr.startsWith("fe") || addr.startsWith("ff")) continue;
+                if (addr.startsWith("64:ff9b::") || addr.startsWith("100::") || addr.startsWith("2001:db8::")) continue;
+            }
+
+            ipAddresses.push(addr);
+        }
     }
 
     redisClient = redis.createClient(config.redisConfig);
