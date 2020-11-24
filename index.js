@@ -16,7 +16,7 @@ const { RateLimiterRedis } = require("rate-limiter-flexible");
 
 const express = require("express");
 
-let config, ipAddresses, redisClient, rateLimitPoints, rateLimitDuration, rateLimiter, rateLimiterMiddleware, app;
+let config, ipAddresses, redisRatelimitClient, redisCacheClient, rateLimitPoints, rateLimitDuration, rateLimiter, rateLimiterMiddleware, app;
 
 /**
  * @param {Error} err
@@ -168,6 +168,31 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
 };
 
 /**
+ * @param {string} query
+ */
+const fetchFromCache = (query) => {
+    return new Promise((resolve, reject) => {
+        if (!redisCacheClient) return reject(new Error("Redis Cache Client is not set!"));
+
+        redisCacheClient.get(query, (err, data) => {
+            if (err) return reject(err);
+            if (data !== null) return resolve(data);
+            return resolve("");
+        });
+    });
+};
+
+/**
+ * @param {string} query
+ * @param {string} value
+ */
+const setCache = (query, value) => {
+    if (!redisCacheClient) throw new Error("Redis Cache Client is not set!");
+
+    return redisCacheClient.setex(query, 1800, value);
+};
+
+/**
  * @param {express.Request} req
  * @param {express.Response} res
  * @param {express.NextFunction} next
@@ -175,39 +200,49 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
  */
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
     let result;
+    let queryValue = queryValue;
+
     try {
-        switch (queryType) {
-            case "recursive":
-                result = await whois.queryRecursive(req.params["whoisValue"]);
-                break;
-            case "recursive-verbose":
-                result = await whois.queryRecursiveVerbose(req.params["whoisValue"]);
-                break;
-            case "ripe":
-                result = await whois.queryRIPE(req.params["whoisValue"]);
-                break;
-            case "arin":
-                result = await whois.queryARIN(req.params["whoisValue"]);
-                break;
-            case "afrinic":
-                result = await whois.queryAFRINIC(req.params["whoisValue"]);
-                break;
-            case "apnic":
-                result = await whois.queryAPNIC(req.params["whoisValue"]);
-                break;
-            case "lacnic":
-                result = await whois.queryLACNIC(req.params["whoisValue"]);
-                break;
-            case "radb":
-                result = await whois.queryRADb(req.params["whoisValue"]);
-                break;
-            default:
-                throw new Error("Scripting Error");
-        }
-    } catch (error) {
-        result = error.message;
-        if (!(result.includes("%#%") || result.toLowerCase().includes("connection timeout"))) {
-            throw error;
+        result = await fetchFromCache(queryValue.toLowerCase());
+    } catch (e) {
+        result = "";
+    }
+
+    if (!result || result === "") {
+        try {
+            switch (queryType) {
+                case "recursive":
+                    result = await whois.queryRecursive(queryValue);
+                    break;
+                case "recursive-verbose":
+                    result = await whois.queryRecursiveVerbose(queryValue);
+                    break;
+                case "ripe":
+                    result = await whois.queryRIPE(queryValue);
+                    break;
+                case "arin":
+                    result = await whois.queryARIN(queryValue);
+                    break;
+                case "afrinic":
+                    result = await whois.queryAFRINIC(queryValue);
+                    break;
+                case "apnic":
+                    result = await whois.queryAPNIC(queryValue);
+                    break;
+                case "lacnic":
+                    result = await whois.queryLACNIC(queryValue);
+                    break;
+                case "radb":
+                    result = await whois.queryRADb(queryValue);
+                    break;
+                default:
+                    throw new Error("Scripting Error");
+            }
+        } catch (error) {
+            result = error.message;
+            if (!(result.includes("%#%") || result.toLowerCase().includes("connection timeout"))) {
+                throw error;
+            }
         }
     }
 
@@ -216,8 +251,11 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         result = result.replace(reg, "REDACTED");
     }
 
+    setCache(queryValue.toLowerCase(), result);
+
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(result);
+
     handleLog(req, res, next, true);
 };
 
@@ -249,12 +287,18 @@ const main = async () => {
         }
     }
 
-    redisClient = redis.createClient(config.redisConfig);
+    redisRatelimitClient = redis.createClient(config.redisConfig);
+    redisCacheClient = redis.createClient({
+        host: config.redisConfig.host,
+        port: config.redisConfig.port,
+        enable_offline_queue: config.redisConfig.enable_offline_queue,
+        db: (config.redisConfig.db + 1)
+    });
 
     rateLimitPoints = 4; // requests
     rateLimitDuration = 10; // seconds
     rateLimiter = new RateLimiterRedis({
-        storeClient: redisClient,
+        storeClient: redisRatelimitClient,
         keyPrefix: "middleware",
         points: rateLimitPoints,
         duration: rateLimitDuration,
@@ -352,6 +396,8 @@ process.on("SIGTERM", () => {
     if (app) app.close(() => {
         console.log(`${Math.round(Date.now() / 1000)} "HTTP server closed"`);
     });
+
+    if (redisRatelimitClient) redisRatelimitClient.end(true);
 });
 
 main();
