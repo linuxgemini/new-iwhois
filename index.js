@@ -200,7 +200,7 @@ const setCache = (query, value) => {
  */
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
     let result;
-    let queryValue = queryValue;
+    let queryValue = req.params["whoisValue"];
 
     try {
         result = await fetchFromCache(queryValue.toLowerCase());
