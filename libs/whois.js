@@ -54,17 +54,17 @@ class whoisClient {
             if (line.length === 0 || line.match(/^\s+$/)) continue;
             if (line.startsWith("refer:") || line.startsWith("whois:") || line.startsWith("ReferralServer:")) {
                 let stripped = this.__strStrip(line.split(" ").slice(1).join(" "));
-                whoisServersRaw.push(stripped);
+                whoisServersRaw.push(stripped.toLowerCase());
             }
             if (this.__strStrip(line).match(/^\w+ WHOIS Server: /i)) {
                 let strippassone = this.__strStrip(line).replace(/^\w+ WHOIS Server: /i, "");
-                whoisServersRaw.push(strippassone);
+                whoisServersRaw.push(strippassone.toLowerCase());
             }
         }
 
         for (const server of whoisServersRaw) {
             if (server.startsWith("rwhois://") || server.includes(":4321")) continue;
-            whoisServers.push(server.replace("whois://", ""));
+            whoisServers.push(server.replace("whois://", "").toLowerCase());
         }
 
         return [...new Set(whoisServers)];
