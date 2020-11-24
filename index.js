@@ -203,7 +203,7 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
     let queryValue = req.params["whoisValue"];
 
     try {
-        result = await fetchFromCache(queryValue.toLowerCase());
+        result = await fetchFromCache(`${queryType}/${queryValue.toLowerCase()}`);
     } catch (e) {
         result = "";
     }
@@ -251,7 +251,7 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         result = result.replace(reg, "REDACTED");
     }
 
-    setCache(queryValue.toLowerCase(), result);
+    setCache(`${queryType}/${queryValue.toLowerCase()}`, result);
 
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(result);
