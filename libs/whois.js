@@ -86,15 +86,15 @@ class whoisClient {
             client.on("data", (chunk) => {
                 data = Buffer.concat([data, chunk]);
             });
-    
+
             client.on("timeout", () => {
                 return reject(new Error("Connection Timeout"));
             });
-    
+
             client.on("error", (e) => {
                 return reject(e);
             });
-    
+
             client.on("close", (had_err) => {
                 if (had_err) return reject(new Error("Connection closed with Error"));
 
@@ -139,7 +139,7 @@ class whoisClient {
 
         try {
             res = await this.__makeQuery(host, fixedData);
-            res = res.replace(/\r\n/g, "\n").replace(/\n+$/g, "");
+            res = res.replace(/\r\n/g, "\n").replace(/^\n+/g, "").replace(/\n+$/g, "");
         } catch (e) {
             if (prevData) {
                 return `%#% ${e.message} on host "${host}", returning data from "${prevHost}"\n\n${prevData}`;
@@ -171,7 +171,7 @@ class whoisClient {
 
         try {
             res = await this.__makeQuery(host, fixedData);
-            res = res.replace(/\r\n/g, "\n").replace(/\n+$/g, "");
+            res = res.replace(/\r\n/g, "\n").replace(/^\n+/g, "").replace(/\n+$/g, "");
         } catch (e) {
             if (prevData) {
                 return `${prevData}\n%#% ${e.message} on host "${host}"`;
