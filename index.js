@@ -127,11 +127,17 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         <p>
             hello!
             </br>example route for standard recursive whois: <a href="w/google.com">/w/google.com</a>
+            </br>example route for verbose recursive whois: <a href="ww/google.com">/ww/google.com</a>
             </br>example route for whois for RIPE (-B flag is already added): <a href="ripe/ORG-TCA23-RIPE">/ripe/ORG-TCA23-RIPE</a>
+            </br>example route for whois for ARIN: <a href="arin/a%20174">/arin/a 174</a>
+            </br>example route for whois for AFRINIC (-B flag is already added): <a href="afrinic/AS33762">/afrinic/AS33762</a>
+            </br>example route for whois for APNIC: <a href="apnic/AS131073">/apnic/AS131073</a>
+            </br>example route for whois for LACNIC: <a href="lacnic/AS8167">/lacnic/AS8167</a>
+            </br>example route for whois for RADb: <a href="radb/1.1.1.0/24">/radb/1.1.1.0/24</a>
             <noscript>
                 </br>
                 </br><b>Sorry, you have JavaScript disabled!</b>
-                </br><b>Please visit <a href="noscript.txt">/noscript.txt</a> for detailed routes.</b>
+                </br><b>Use the above examples as detailed usage.</b>
             </noscript>
         </p>
         </br>
