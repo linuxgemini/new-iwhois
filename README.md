@@ -2,7 +2,7 @@
 
 New Generation Interactive WHOIS
 
-It's a gimmic name, but hey it explains what it is.
+It's a gimmick name, but hey it explains what it is.
 
 A "small" JavaScript applet to serve a web WHOIS endpoint. Has simple Redis caching and request ratelimiting.
 

@@ -159,7 +159,7 @@ const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
         <input type="submit" id="postit" onclick="if (document.getElementById('whoisval').value !== '') window.location.href=document.getElementById('method').value+'/'+document.getElementById('whoisval').value">
         </br>
         </br>
-        <p>Powered by <a href="https://github.com/linuxgemini/new-iwhois">new-iwhois</a></p>
+        <p>Powered by <a href="https://github.com/linuxgemini/new-iwhois">new-iwhois</a> by <a href="https://linuxgemini.space">linuxgemini</a></p>
         <script>
             var node = document.getElementById("whoisval");
             node.addEventListener("keyup", function(event) {
