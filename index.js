@@ -404,6 +404,7 @@ process.on("SIGTERM", () => {
     });
 
     if (redisRatelimitClient) redisRatelimitClient.end(true);
+    if (redisCacheClient) redisCacheClient.end(true);
 });
 
 main();
