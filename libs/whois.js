@@ -59,7 +59,7 @@ class whoisClient {
             }
             if (lineStrip.match(/^\w+ WHOIS Server: /i)) {
                 let strippassone = this.__strStrip(line).replace(/^\w+ WHOIS Server: /i, "");
-                if (stripped !== "") whoisServersRaw.push(strippassone.toLowerCase());
+                if (strippassone !== "") whoisServersRaw.push(strippassone.toLowerCase());
             }
         }
 
