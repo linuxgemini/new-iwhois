@@ -31,8 +31,8 @@ const exitWithError = (err) => {
 
 const constructIP = (reqip, reqips) => {
     let xfwip = (reqips && Array.isArray(reqips) ? reqips[0] : reqip);
-    let host = (xfwip && xfwip !== reqip ? xfwip : reqip);
-    let hostLog = (xfwip !== reqip ? (xfwip + "," + reqip) : reqip);
+    let host = (xfwip && xfwip !== reqip ? xfwip : reqip).replace(/^(::ffff:)/, "");
+    let hostLog = (xfwip && xfwip !== reqip ? (xfwip + "," + reqip) : reqip).replace(/^(::ffff:)/, "");
 
     return {
         host,
