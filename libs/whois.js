@@ -52,13 +52,14 @@ class whoisClient {
         for (const line of dataLines) {
             if (line.startsWith("%") || line.startsWith("#")) continue;
             if (line.length === 0 || line.match(/^\s+$/)) continue;
-            if (line.startsWith("refer:") || line.startsWith("whois:") || line.startsWith("ReferralServer:")) {
+            let lineStrip = this.__strStrip(line);
+            if (lineStrip.startsWith("refer:") || lineStrip.startsWith("whois:") || lineStrip.startsWith("ReferralServer:")) {
                 let stripped = this.__strStrip(line.split(" ").slice(1).join(" "));
-                whoisServersRaw.push(stripped.toLowerCase());
+                if (stripped !== "") whoisServersRaw.push(stripped.toLowerCase());
             }
-            if (this.__strStrip(line).match(/^\w+ WHOIS Server: /i)) {
+            if (lineStrip.match(/^\w+ WHOIS Server: /i)) {
                 let strippassone = this.__strStrip(line).replace(/^\w+ WHOIS Server: /i, "");
-                whoisServersRaw.push(strippassone.toLowerCase());
+                if (stripped !== "") whoisServersRaw.push(strippassone.toLowerCase());
             }
         }
 
