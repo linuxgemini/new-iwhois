@@ -355,6 +355,12 @@ const main = async () => {
     });
     app.get("/robots.txt", handleRobots);
     app.use(rateLimiterMiddleware);
+    app.use((err, req, res, next) => {
+        console.error(err.stack);
+        res.set("Content-Type", "text/plain; charset=utf-8");
+        res.status(500).send("Something broke!");
+        handleLog(req, res, next, true);
+    });
     app.get("/noscript.txt", (req, res, next) => {
         res.set("Content-Type", "text/plain; charset=utf-8");
         res.status(409).send(`Sorry, you have JavaScript disabled!
@@ -382,12 +388,6 @@ Available routes:
     app.use((req, res, next) => {
         res.set("Content-Type", "text/plain; charset=utf-8");
         res.status(404).send("Sorry, can't find that!");
-        next();
-    });
-    app.use((err, req, res, next) => {
-        console.error(err.stack);
-        res.set("Content-Type", "text/plain; charset=utf-8");
-        res.status(500).send("Something broke!");
         next();
     });
     app.use(handleLog);
