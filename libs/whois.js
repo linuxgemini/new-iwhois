@@ -129,12 +129,13 @@ class whoisClient {
      * @param {string} data
      * @param {number} recursed
      * @param {string?} currHost
-     * @param {string?} prevHost
+     * @param {string[]?} prevHosts
      * @param {string?} prevData
      */
-    async queryRecursive(data, recursed = 0, currHost = null, prevHost = null, prevData = null) {
+    async queryRecursive(data, recursed = 0, currHost = null, prevHosts = null, prevData = null) {
         let host = (recursed > 0 ? currHost : "whois.iana.org");
         let fixedData = this.__quirkPass(host, data);
+        if (prevHosts === null) prevHosts = [host];
 
         let res;
 
@@ -151,8 +152,8 @@ class whoisClient {
 
         let refs = this.__returnRefers(res);
 
-        if (refs[0] && refs[0] !== host) {
-            return await this.queryRecursive(data, (recursed + 1), refs[0], host, res);
+        if (refs[0] && (refs[0] !== host || !prevHosts.includes(refs[0]))) {
+            return await this.queryRecursive(data, (recursed + 1), refs[0], [refs[0], ...prevHosts], res);
         } else {
             return res;
         }
@@ -162,11 +163,13 @@ class whoisClient {
      * @param {string} data
      * @param {number} recursed
      * @param {string?} currHost
+     * @param {string[]?} prevHosts
      * @param {string?} prevData
      */
-    async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevData = null) {
+    async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevHosts = null, prevData = null) {
         let host = (recursed > 0 ? currHost : "whois.iana.org");
         let fixedData = this.__quirkPass(host, data);
+        if (prevHosts === null) prevHosts = [host];
 
         let res;
 
@@ -185,9 +188,9 @@ class whoisClient {
 
         if (prevData) res = `${prevData}\n\n\n${res}`;
 
-        if (refs[0] && refs[0] !== host) {
+        if (refs[0] && (refs[0] !== host || !prevHosts.includes(refs[0]))) {
             res = `${res}\n\n\n%#% Found referrals to '${JSON.stringify(refs)}', trying the first host ("${refs[0]}")`;
-            return await this.queryRecursiveVerbose(data, (recursed + 1), refs[0], res);
+            return await this.queryRecursiveVerbose(data, (recursed + 1), refs[0], [refs[0], ...prevHosts], res);
         } else {
             return res;
         }
