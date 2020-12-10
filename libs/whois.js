@@ -144,7 +144,7 @@ class whoisClient {
             res = res.replace(/\r\n/g, "\n").replace(/^\n+/g, "").replace(/\n+$/g, "");
         } catch (e) {
             if (prevData) {
-                return `%#% ${e.message} on host "${host}", returning data from "${prevHosts[0]}"\n\n${prevData}`;
+                return `%#% ${e.message} on host "${host}", returning data from "${prevHosts[1]}"\n\n${prevData}`;
             } else {
                 throw e;
             }
