@@ -205,7 +205,7 @@ const setCache = (query, value) => {
  * @param {string} queryType
  */
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
-    let result;
+    let result, timedOut;
     let queryValue = req.params["whoisValue"];
 
     try {
@@ -248,6 +248,8 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
             result = error.message;
             if (!(result.includes("%#%") || result.toLowerCase().includes("connection timeout"))) {
                 throw error;
+            } else if (!result.includes("%#%") && (result.toLowerCase().includes("connection timeout") || result.toLowerCase().includes("connection closed"))) {
+                timedOut = true;
             }
         }
     }
@@ -257,7 +259,7 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         result = result.replace(reg, "REDACTED");
     }
 
-    setCache(`${queryType}/${queryValue.toLowerCase()}`, result);
+    if (!timedOut) setCache(`${queryType}/${queryValue.toLowerCase()}`, result);
 
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(result);
