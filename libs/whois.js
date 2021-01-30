@@ -173,7 +173,7 @@ class whoisClient {
 
         try {
             res = await this.__makeQuery(host, fixedData, port);
-            res = res.replace(/\r\n/g, "\n").replace(/^\n+/g, "").replace(/\n+$/g, "");
+            res = res.replace(/\r\n/g, "\n").replace(/^\n+|\n+$/g, "");
         } catch (e) {
             if (prevData) {
                 return `%#% ${e.message} on host "${host}", returning data from "${prevHosts[1]}"\n\n${prevData}`;
@@ -213,7 +213,7 @@ class whoisClient {
 
         try {
             res = await this.__makeQuery(host, fixedData, port);
-            res = res.replace(/\r\n/g, "\n").replace(/^\n+/g, "").replace(/\n+$/g, "");
+            res = res.replace(/\r\n/g, "\n").replace(/^\n+|\n+$/g, "");
         } catch (e) {
             if (prevData) {
                 return `${prevData}\n%#% ${e.message} on host "${host}"`;
