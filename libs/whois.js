@@ -10,6 +10,7 @@
 
 const chardet = require("chardet");
 const iconv = require("iconv-lite");
+const ipaddress = require("ip-address");
 const net = require("net");
 
 class whoisClient {
@@ -22,6 +23,19 @@ class whoisClient {
         this.__asnQuirks = {
             "whois.arin.net": "a {{data}}"
         };
+        this.__ipQuirks = {
+            "whois.arin.net": "n + {{data}}"
+        };
+    }
+
+    /**
+     * @param {string} str
+     * @returns {boolean}
+     */
+    __isIP(str) {
+        let v4 = ipaddress.Address4.isValid(str);
+        let v6 = ipaddress.Address6.isValid(str);
+        return v4 || v6;
     }
 
     /**
@@ -29,15 +43,12 @@ class whoisClient {
      * @returns {string}
      */
     __strStrip(str) {
-        const regexStart = /^\s+/;
-        const regexEnd = /\s+$/;
-
-        return str.replace(regexStart, "").replace(regexEnd, "");
+        return str.replace(/^\s+|\s+$/g, "");
     }
 
     /**
      * @param {string} data
-     * @returns {string[]}
+     * @returns {Array.<{host: string, port: number}>}
      */
     __returnRefers(data) {
         let splitter = (data.includes("\r\n") ? "\r\n" : "\n");
@@ -64,8 +75,22 @@ class whoisClient {
         }
 
         for (const server of whoisServersRaw) {
-            if (server.startsWith("rwhois://") || server.includes(":4321")) continue;
-            whoisServers.push(server.replace("whois://", "").toLowerCase());
+            let srv = server
+                .replace(/^r?whois:\/\//, "")
+                .replace(/:\d{1,5}$/, "")
+                .toLowerCase();
+            let srvport = 43;
+
+            if (server.includes(":")) {
+                let srvparts = server.split(":");
+                let srvpartsLastItem = srvparts[srvparts.length - 1];
+                if (srvpartsLastItem.match(/^[0-9]{1,5}$/) && !srvpartsLastItem.includes("]")) srvport = parseInt(srvpartsLastItem, 10);
+            }
+
+            whoisServers.push({
+                host: srv,
+                port: srvport
+            });
         }
 
         return [...new Set(whoisServers)];
@@ -74,9 +99,10 @@ class whoisClient {
     /**
      * @param {string} host
      * @param {string} querydata
+     * @param {number?} port
      * @returns {Promise<string>}
      */
-    __makeQuery(host, querydata) {
+    __makeQuery(host, querydata, port = 43) {
         return new Promise((resolve, reject) => {
             let data = Buffer.from([]);
 
@@ -105,7 +131,7 @@ class whoisClient {
 
             client.connect({
                 host,
-                port: 43
+                port
             }, () => {
                 client.write(`${querydata}\r\n`);
             });
@@ -121,6 +147,7 @@ class whoisClient {
         if (this.__extQuirks[host]) quirkFixedData = this.__extQuirks[host].quirk.replace("{{data}}", data);
         if (this.__quirks[host]) quirkFixedData = this.__quirks[host].replace("{{data}}", (quirkFixedData || data));
         if (this.__asnQuirks[host] && data.match(/^AS\d{1,10}/i)) quirkFixedData = this.__asnQuirks[host].replace("{{data}}", (quirkFixedData || data).replace(/^AS/i, ""));
+        if (this.__ipQuirks[host] && this.__isIP(data)) quirkFixedData = this.__ipQuirks[host].replace("{{data}}", data);
 
         return (quirkFixedData || data);
     }
@@ -131,8 +158,9 @@ class whoisClient {
      * @param {string?} currHost
      * @param {string[]?} prevHosts
      * @param {string?} prevData
+     * @param {number?} port
      */
-    async queryRecursive(data, recursed = 0, currHost = null, prevHosts = null, prevData = null) {
+    async queryRecursive(data, recursed = 0, currHost = null, prevHosts = null, prevData = null, port = 43) {
         let host = (recursed > 0 ? currHost : "whois.iana.org");
         let fixedData = this.__quirkPass(host, data);
         if (prevHosts === null) prevHosts = [host];
@@ -140,7 +168,7 @@ class whoisClient {
         let res;
 
         try {
-            res = await this.__makeQuery(host, fixedData);
+            res = await this.__makeQuery(host, fixedData, port);
             res = res.replace(/\r\n/g, "\n").replace(/^\n+/g, "").replace(/\n+$/g, "");
         } catch (e) {
             if (prevData) {
@@ -151,9 +179,13 @@ class whoisClient {
         }
 
         let refs = this.__returnRefers(res);
+        let refHosts = refs.map(h => h.host);
+        let refPorts = refs.map(p => p.port);
 
-        if (refs[0] && (refs[0] !== host || !prevHosts.includes(refs[0]))) {
-            return await this.queryRecursive(data, (recursed + 1), refs[0], [refs[0], ...prevHosts], res);
+        if (recursed === 10) {
+            return res;
+        } else if (refHosts[0] && (refHosts[0] !== host || !prevHosts.includes(refHosts[0])) && refPorts[0] === 43) {
+            return await this.queryRecursive(data, (recursed + 1), refHosts[0], [refHosts[0], ...prevHosts], res, refPorts[0]);
         } else {
             return res;
         }
@@ -165,8 +197,10 @@ class whoisClient {
      * @param {string?} currHost
      * @param {string[]?} prevHosts
      * @param {string?} prevData
+     * @param {number?} port
+     * @param {Array.<{host: string, port: number}>?} undoneRefs
      */
-    async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevHosts = null, prevData = null) {
+    async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevHosts = null, prevData = null, port = 43, undoneRefs = null) {
         let host = (recursed > 0 ? currHost : "whois.iana.org");
         let fixedData = this.__quirkPass(host, data);
         if (prevHosts === null) prevHosts = [host];
@@ -174,7 +208,7 @@ class whoisClient {
         let res;
 
         try {
-            res = await this.__makeQuery(host, fixedData);
+            res = await this.__makeQuery(host, fixedData, port);
             res = res.replace(/\r\n/g, "\n").replace(/^\n+/g, "").replace(/\n+$/g, "");
         } catch (e) {
             if (prevData) {
@@ -185,12 +219,25 @@ class whoisClient {
         }
 
         let refs = this.__returnRefers(res);
+        let refHosts = refs.map(h => h.host);
+        let refPorts = refs.map(p => p.port);
+        let undonerefHosts;
+        let undonerefPorts;
 
         if (prevData) res = `${prevData}\n\n\n${res}`;
+        if (undoneRefs) {
+            undonerefHosts = undoneRefs.map(h => h.host);
+            undonerefPorts = undoneRefs.map(p => p.port);
+        }
 
-        if (refs[0] && (refs[0] !== host || !prevHosts.includes(refs[0]))) {
-            res = `${res}\n\n\n%#% Found referrals to '${JSON.stringify(refs)}', trying the first host ("${refs[0]}")`;
-            return await this.queryRecursiveVerbose(data, (recursed + 1), refs[0], [refs[0], ...prevHosts], res);
+        if (recursed === 10) {
+            return res;
+        } else if (refHosts[0] && (refHosts[0] !== host || !prevHosts.includes(refHosts[0]))) {
+            res = `${res}\n\n\n%#% Found referrals to '${JSON.stringify(refHosts)}', trying the first host ("${refHosts[0]}")`;
+            return await this.queryRecursiveVerbose(data, (recursed + 1), refHosts[0], [refHosts[0], ...prevHosts], res, refPorts[0], refs.slice(1));
+        } else if (undonerefHosts[0] && (undonerefHosts[0] !== host || !prevHosts.includes(undonerefHosts[0]))) {
+            res = `${res}\n\n\n%#% Already have referrals to '${JSON.stringify(undonerefHosts)}', trying the first host ("${undonerefHosts[0]}")`;
+            return await this.queryRecursiveVerbose(data, (recursed + 1), undonerefHosts[0], [undonerefHosts[0], ...prevHosts], res, undonerefPorts[0], undoneRefs.slice(1));
         } else {
             return res;
         }
