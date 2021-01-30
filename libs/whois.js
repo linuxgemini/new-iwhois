@@ -84,7 +84,11 @@ class whoisClient {
             if (server.includes(":")) {
                 let srvparts = server.split(":");
                 let srvpartsLastItem = srvparts[srvparts.length - 1];
-                if (srvpartsLastItem.match(/^[0-9]{1,5}$/) && !srvpartsLastItem.includes("]")) srvport = parseInt(srvpartsLastItem, 10);
+                if (!(srvpartsLastItem.match(/^\d{1,5}$/) && !srvpartsLastItem.includes("]"))) {
+                    srv = server;
+                } else {
+                    srvport = parseInt(srvpartsLastItem, 10);
+                }
             }
 
             whoisServers.push({
