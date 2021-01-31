@@ -15,6 +15,7 @@ const net = require("net");
 
 class whoisClient {
     constructor() {
+        this.__domainWhoisList = require("./domain-whois-list.json");
         this.__extQuirks = require("./charset-list.json");
         this.__quirks = {
             "whois.ripe.net": "{{data}} -B",
@@ -143,6 +144,22 @@ class whoisClient {
     }
 
     /**
+     * @param {string} data
+     */
+    __whoisServerPass(data) {
+        let server = "whois.iana.org";
+
+        for (const tld of Object.keys(this.__domainWhoisList)) {
+            if (data.endsWith(tld)) {
+                server = this.__domainWhoisList[tld];
+                break;
+            }
+        }
+
+        return server;
+    }
+
+    /**
      * @param {string} host
      * @param {string} data
      */
@@ -165,7 +182,7 @@ class whoisClient {
      * @param {number?} port
      */
     async queryRecursive(data, recursed = 0, currHost = null, prevHosts = null, prevData = null, port = 43) {
-        let host = (recursed > 0 ? currHost : "whois.iana.org");
+        let host = (recursed > 0 ? currHost : this.__whoisServerPass(data));
         let fixedData = this.__quirkPass(host, data);
         if (prevHosts === null) prevHosts = [host];
 
@@ -205,7 +222,7 @@ class whoisClient {
      * @param {Array.<{host: string, port: number}>?} undoneRefs
      */
     async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevHosts = null, prevData = null, port = 43, undoneRefs = null) {
-        let host = (recursed > 0 ? currHost : "whois.iana.org");
+        let host = (recursed > 0 ? currHost : this.__whoisServerPass(data));
         let fixedData = this.__quirkPass(host, data);
         if (prevHosts === null) prevHosts = [host];
 
