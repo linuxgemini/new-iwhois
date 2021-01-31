@@ -48,7 +48,7 @@ const main = async () => {
             case "NONE":
                 break;
             case "AFILIAS":
-                finale[sp[0]] = "whois.afilias.net";
+                finale[sp[0]] = "whois.afilias-grs.info";
                 break;
             case "VERISIGN":
                 finale[sp[0]] = (sp[2] || "whois.verisign-grs.com");
