@@ -214,7 +214,7 @@ class whoisClient {
 
         if (recursed === 10) {
             return res;
-        } else if (refHosts[0] && (refHosts[0] !== host || !prevHosts.includes(refHosts[0])) && refPorts[0] === 43) {
+        } else if (refHosts && refHosts[0] && (refHosts[0] !== host || !prevHosts.includes(refHosts[0])) && refPorts[0] === 43) {
             return await this.queryRecursive(data, (recursed + 1), refHosts[0], [refHosts[0], ...prevHosts], res, refPorts[0]);
         } else {
             return res;
@@ -262,10 +262,10 @@ class whoisClient {
 
         if (recursed === 10) {
             return res;
-        } else if (refHosts[0] && (refHosts[0] !== host || !prevHosts.includes(refHosts[0]))) {
+        } else if (refHosts && refHosts[0] && (refHosts[0] !== host || !prevHosts.includes(refHosts[0]))) {
             res = `${res}\n\n\n%#% Found referrals to '${JSON.stringify(refHosts)}', trying the first host ("${refHosts[0]}")`;
             return await this.queryRecursiveVerbose(data, (recursed + 1), refHosts[0], [refHosts[0], ...prevHosts], res, refPorts[0], refs.slice(1));
-        } else if (undonerefHosts[0] && (undonerefHosts[0] !== host || !prevHosts.includes(undonerefHosts[0]))) {
+        } else if (undonerefHosts && undonerefHosts[0] && (undonerefHosts[0] !== host || !prevHosts.includes(undonerefHosts[0]))) {
             res = `${res}\n\n\n%#% Already have referrals to '${JSON.stringify(undonerefHosts)}', trying the first host ("${undonerefHosts[0]}")`;
             return await this.queryRecursiveVerbose(data, (recursed + 1), undonerefHosts[0], [undonerefHosts[0], ...prevHosts], res, undonerefPorts[0], undoneRefs.slice(1));
         } else {
