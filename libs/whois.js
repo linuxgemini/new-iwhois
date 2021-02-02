@@ -15,6 +15,7 @@ const net = require("net");
 
 class whoisClient {
     constructor() {
+        this.__nicHandleWhoisList = require("./nic-handle-list.json");
         this.__domainWhoisList = require("./domain-whois-list.json");
         this.__extQuirks = require("./charset-list.json");
         this.__quirks = {
@@ -148,10 +149,18 @@ class whoisClient {
      */
     __whoisServerPass(data) {
         let server = "whois.iana.org";
+        data = data.toLowerCase();
 
         for (const tld of Object.keys(this.__domainWhoisList)) {
             if (data.endsWith(tld)) {
                 server = this.__domainWhoisList[tld];
+                break;
+            }
+        }
+
+        for (const nicHandle of Object.keys(this.__nicHandleWhoisList)) {
+            if (data.endsWith(nicHandle)) {
+                server = this.__nicHandleWhoisList[nicHandle];
                 break;
             }
         }
