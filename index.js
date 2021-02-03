@@ -206,10 +206,10 @@ const setCache = (query, value) => {
  */
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
     let result, timedOut;
-    let queryValue = req.params["whoisValue"];
+    let queryValue = req.params["whoisValue"].toUpperCase();
 
     try {
-        result = await fetchFromCache(`${queryType}/${queryValue.toLowerCase()}`);
+        result = await fetchFromCache(`${queryType}/${queryValue}`);
     } catch (e) {
         result = "";
     }
@@ -259,7 +259,7 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         result = result.replace(reg, "REDACTED");
     }
 
-    if (!timedOut) setCache(`${queryType}/${queryValue.toLowerCase()}`, result);
+    if (!timedOut) setCache(`${queryType}/${queryValue}`, result);
 
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(result);

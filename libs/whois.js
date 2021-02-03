@@ -273,6 +273,9 @@ class whoisClient {
         }
     }
 
+    /**
+     * @param {string} data
+     */
     async queryRIPE(data) {
         let host = "whois.ripe.net";
         let fixedData = this.__quirkPass(host, data);
@@ -282,6 +285,9 @@ class whoisClient {
         return res;
     }
 
+    /**
+     * @param {string} data
+     */
     async queryARIN(data) {
         let host = "whois.arin.net";
         let fixedData = this.__quirkPass(host, data);
@@ -291,6 +297,9 @@ class whoisClient {
         return res;
     }
 
+    /**
+     * @param {string} data
+     */
     async queryAFRINIC(data) {
         let host = "whois.afrinic.net";
         let fixedData = this.__quirkPass(host, data);
@@ -300,6 +309,9 @@ class whoisClient {
         return res;
     }
 
+    /**
+     * @param {string} data
+     */
     async queryAPNIC(data) {
         let host = "whois.apnic.net";
         let fixedData = this.__quirkPass(host, data);
@@ -309,6 +321,9 @@ class whoisClient {
         return res;
     }
 
+    /**
+     * @param {string} data
+     */
     async queryLACNIC(data) {
         let host = "whois.lacnic.net";
         let fixedData = this.__quirkPass(host, data);
@@ -318,6 +333,9 @@ class whoisClient {
         return res;
     }
 
+    /**
+     * @param {string} data
+     */
     async queryRADb(data) {
         let host = "whois.radb.net";
         let fixedData = this.__quirkPass(host, data);
