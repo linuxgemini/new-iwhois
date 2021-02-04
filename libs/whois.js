@@ -15,6 +15,7 @@ const net = require("net");
 
 class whoisClient {
     constructor() {
+        this.__recurseLimit = 10;
         this.__nicHandleWhoisList = require("./nic-handle-list.json");
         this.__domainWhoisList = require("./domain-whois-list.json");
         this.__extQuirks = require("./charset-list.json");
@@ -31,9 +32,17 @@ class whoisClient {
     }
 
     /**
+     * @param {string} data
+     * @returns {string}
+     */
+    __cleanupData(data) {
+        return data.replace(/\r\n/g, "\n").replace(/^\n+|\n+$/g, "");
+    }
+
+    /**
      * dedupe refers by key
      * from https://stackoverflow.com/a/56768137
-     * @param {Array.<{any}>} arr 
+     * @param {any[]} arr 
      * @param {*} key 
      */
     __dedupeRefers(arr, key) {
@@ -124,7 +133,7 @@ class whoisClient {
 
             const client = new net.Socket();
 
-            client.setTimeout(3000);
+            client.setTimeout(4000);
 
             client.on("data", (chunk) => {
                 data = Buffer.concat([data, chunk]);
@@ -209,7 +218,7 @@ class whoisClient {
 
         try {
             res = await this.__makeQuery(host, fixedData, port);
-            res = res.replace(/\r\n/g, "\n").replace(/^\n+|\n+$/g, "");
+            res = this.__cleanupData(res);
         } catch (e) {
             if (prevData) {
                 return `%#% ${e.message} on host "${host}", returning data from "${prevHosts[1]}"\n\n${prevData}`;
@@ -222,7 +231,7 @@ class whoisClient {
         let refHosts = refs.map(h => h.host);
         let refPorts = refs.map(p => p.port);
 
-        if (recursed === 10) {
+        if (recursed === this.__recurseLimit) {
             return res;
         } else if (refHosts && refHosts[0] && (refHosts[0] !== host || !prevHosts.includes(refHosts[0])) && refPorts[0] === 43) {
             return await this.queryRecursive(data, (recursed + 1), refHosts[0], [refHosts[0], ...prevHosts], res, refPorts[0]);
@@ -249,7 +258,7 @@ class whoisClient {
 
         try {
             res = await this.__makeQuery(host, fixedData, port);
-            res = res.replace(/\r\n/g, "\n").replace(/^\n+|\n+$/g, "");
+            res = this.__cleanupData(res);
         } catch (e) {
             if (prevData) {
                 return `${prevData}\n%#% ${e.message} on host "${host}"`;
@@ -270,7 +279,7 @@ class whoisClient {
             undonerefPorts = undoneRefs.map(p => p.port);
         }
 
-        if (recursed === 10) {
+        if (recursed === this.__recurseLimit) {
             return res;
         } else if (refHosts && refHosts[0] && (refHosts[0] !== host || !prevHosts.includes(refHosts[0]))) {
             res = `${res}\n\n\n%#% Found referrals to '${JSON.stringify(refHosts)}', trying the first host ("${refHosts[0]}")`;
@@ -292,7 +301,7 @@ class whoisClient {
 
         let res = await this.__makeQuery(host, fixedData);
 
-        return res;
+        return this.__cleanupData(res);
     }
 
     /**
@@ -304,7 +313,7 @@ class whoisClient {
 
         let res = await this.__makeQuery(host, fixedData);
 
-        return res;
+        return this.__cleanupData(res);
     }
 
     /**
@@ -316,7 +325,7 @@ class whoisClient {
 
         let res = await this.__makeQuery(host, fixedData);
 
-        return res;
+        return this.__cleanupData(res);
     }
 
     /**
@@ -328,7 +337,7 @@ class whoisClient {
 
         let res = await this.__makeQuery(host, fixedData);
 
-        return res;
+        return this.__cleanupData(res);
     }
 
     /**
@@ -340,7 +349,7 @@ class whoisClient {
 
         let res = await this.__makeQuery(host, fixedData);
 
-        return res;
+        return this.__cleanupData(res);
     }
 
     /**
@@ -352,7 +361,7 @@ class whoisClient {
 
         let res = await this.__makeQuery(host, fixedData);
 
-        return res;
+        return this.__cleanupData(res);
     }
 }
 
