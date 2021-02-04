@@ -31,6 +31,16 @@ class whoisClient {
     }
 
     /**
+     * dedupe refers by key
+     * from https://stackoverflow.com/a/56768137
+     * @param {Array.<{any}>} arr 
+     * @param {*} key 
+     */
+    __dedupeRefers(arr, key) {
+        return [...new Map(arr.map(item => [item[key], item])).values()];
+    }
+
+    /**
      * @param {string} str
      * @returns {boolean}
      */
@@ -99,7 +109,7 @@ class whoisClient {
             });
         }
 
-        return [...new Set(whoisServers)];
+        return this.__dedupeRefers(whoisServers, "host");
     }
 
     /**
