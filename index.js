@@ -206,7 +206,12 @@ const setCache = (query, value) => {
  */
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
     let result, timedOut;
-    let queryValue = req.params["whoisValue"].toUpperCase();
+    /** @type {string[]} */
+    let whoisValues = req.params["whoisValue"].split(" ");
+    let queryValue = whoisValues.slice(-1).join("").toUpperCase(); // why not `(-1)[0]`? well, if thats undefined we might get poof
+    let queryOptions = whoisValues.slice(0, -1).join(" ");
+
+    if (queryOptions.length > 0) queryValue = `${queryOptions} ${queryValue}`;
 
     try {
         result = await fetchFromCache(`${queryType}/${queryValue}`);
