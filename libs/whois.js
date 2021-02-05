@@ -98,16 +98,16 @@ class whoisClient {
         for (const server of whoisServersRaw) {
             let srv = server
                 .replace(/^(r?whois):\/\//, "")
-                .replace(/:\d{1,5}$/, "")
                 .toLowerCase();
             let srvport = 43;
 
-            if (server.includes(":")) {
+            if (srv.includes(":")) {
                 let srvparts = server.split(":");
                 let srvpartsLastItem = srvparts[srvparts.length - 1];
                 if (!(srvpartsLastItem.match(/^\d{1,5}$/) && !srvpartsLastItem.includes("]"))) {
                     srv = server;
                 } else {
+                    srv = srv.replace(/:\d{1,5}$/, "");
                     srvport = parseInt(srvpartsLastItem, 10);
                 }
             }
