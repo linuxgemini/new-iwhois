@@ -97,7 +97,7 @@ class whoisClient {
 
         for (const server of whoisServersRaw) {
             let srv = server
-                .replace(/^r?whois:\/\//, "")
+                .replace(/^(r?whois):\/\//, "")
                 .replace(/:\d{1,5}$/, "")
                 .toLowerCase();
             let srvport = 43;
