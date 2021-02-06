@@ -104,11 +104,11 @@ class whoisClient {
             if (srv.includes(":")) {
                 let srvparts = server.split(":");
                 let srvpartsLastItem = srvparts[srvparts.length - 1];
-                if (srvpartsLastItem.endsWith("]") || !srvpartsLastItem.match(/^(\d{1,5}$)/)) {
+                if (srvpartsLastItem.endsWith("]") || !srvpartsLastItem.match(/^:(\d{1,5}$)/)) {
                     srv = server;
                 } else {
                     srv = srv.replace(/:\d{1,5}$/, "");
-                    srvport = parseInt(srvpartsLastItem.match(/:(\d{1,5}$)/)[1], 10);
+                    srvport = parseInt(srvpartsLastItem.match(/^:(\d{1,5}$)/)[1], 10);
                 }
             }
 
