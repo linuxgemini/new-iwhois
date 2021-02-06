@@ -32,11 +32,19 @@ class whoisClient {
     }
 
     /**
+     * @param {string} str
+     * @returns {string}
+     */
+    __strStrip(str) {
+        return str.replace(/^\s+|\s+$/g, "");
+    }
+
+    /**
      * @param {string} data
      * @returns {string}
      */
     __cleanupData(data) {
-        return data.replace(/\r\n/g, "\n").replace(/^\n+|\n+$/g, "");
+        return this.__strStrip(data.replace(/\r\n/g, "\n"));
     }
 
     /**
@@ -57,14 +65,6 @@ class whoisClient {
         let v4 = ipaddress.Address4.isValid(str);
         let v6 = ipaddress.Address6.isValid(str);
         return v4 || v6;
-    }
-
-    /**
-     * @param {string} str
-     * @returns {string}
-     */
-    __strStrip(str) {
-        return str.replace(/^\s+|\s+$/g, "");
     }
 
     /**
@@ -104,11 +104,11 @@ class whoisClient {
             if (srv.includes(":")) {
                 let srvparts = server.split(":");
                 let srvpartsLastItem = srvparts[srvparts.length - 1];
-                if (!(srvpartsLastItem.match(/^\d{1,5}$/) && !srvpartsLastItem.includes("]"))) {
+                if (srvpartsLastItem.endsWith("]") || !srvpartsLastItem.match(/^(\d{1,5}$)/)) {
                     srv = server;
                 } else {
                     srv = srv.replace(/:\d{1,5}$/, "");
-                    srvport = parseInt(srvpartsLastItem, 10);
+                    srvport = parseInt(srvpartsLastItem.match(/:(\d{1,5}$)/)[1], 10);
                 }
             }
 
