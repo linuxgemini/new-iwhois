@@ -205,7 +205,12 @@ const setCache = (query, value) => {
  * @param {string} queryType
  */
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
-    let result, timedOut;
+    /** @type {string} */
+    let result;
+    /** @type {boolean} */
+    let timedOut = false;
+    /** @type {Error} */
+    let error;
     /** @type {string[]} */
     let whoisValues = req.params["whoisValue"].split(" ");
     let queryValue = whoisValues.slice(-1).join("").toUpperCase(); // why not `(-1)[0]`? well, if thats undefined we might get poof
@@ -249,14 +254,19 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
                 default:
                     throw new Error("Scripting Error");
             }
-        } catch (error) {
-            result = error.message;
-            if (!(result.includes("%#%") || result.toLowerCase().includes("connection timeout"))) {
-                throw error;
-            } else if (!result.includes("%#%") && (result.toLowerCase().includes("connection timeout") || result.toLowerCase().includes("connection closed"))) {
-                timedOut = true;
-            }
+        } catch (err) {
+            error = err;
+            result = err.message;
         }
+    }
+
+    let isConnectionFailed = result.match(/connection (timeout|closed)/gi);
+    let hasLibraryComment = result.includes("%#%");
+
+    if (!(hasLibraryComment || isConnectionFailed)) {
+        throw (error || new Error("Internal Error"));
+    } else if (!hasLibraryComment && isConnectionFailed) {
+        timedOut = true;
     }
 
     for (const addr of ipAddresses) {
