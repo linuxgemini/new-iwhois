@@ -207,8 +207,6 @@ const setCache = (query, value) => {
 const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
     /** @type {string} */
     let result;
-    /** @type {boolean} */
-    let timedOut = false;
     /** @type {Error} */
     let error;
     /** @type {string[]} */
@@ -263,10 +261,8 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
     let isConnectionFailed = result.match(/connection (timeout|closed)/gi);
     let hasLibraryComment = result.includes("%#%");
 
-    if (!(hasLibraryComment || isConnectionFailed)) {
-        throw (error || new Error("Internal Error"));
-    } else if (!hasLibraryComment && isConnectionFailed) {
-        timedOut = true;
+    if (!hasLibraryComment && !isConnectionFailed && error) {
+        throw error;
     }
 
     for (const addr of ipAddresses) {
@@ -274,7 +270,7 @@ const handleQuery = async (req, res, next, queryType) => { // eslint-disable-lin
         result = result.replace(reg, "REDACTED");
     }
 
-    if (!timedOut) setCache(`${queryType}/${queryValue}`, result);
+    if (!isConnectionFailed) setCache(`${queryType}/${queryValue}`, result);
 
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(result);
