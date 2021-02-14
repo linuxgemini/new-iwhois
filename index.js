@@ -59,7 +59,7 @@ const handleLog = (req, res, next, skipNext = false) => {
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
-const handleRobots = (req, res, next) => { // eslint-disable-line no-unused-vars
+const handleRobots = (req, res, next) => {
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(`User-agent: *
 Allow: /$
@@ -72,7 +72,7 @@ Disallow: /`);
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
-const handleRoot = (req, res, next) => { // eslint-disable-line no-unused-vars
+const handleRoot = (req, res, next) => {
     res.set("Content-Type", "text/html; charset=utf-8");
     res.status(200).send(`<!DOCTYPE html>
 <html>
@@ -204,7 +204,7 @@ const setCache = (query, value) => {
  * @param {express.NextFunction} next
  * @param {string} queryType
  */
-const handleQuery = async (req, res, next, queryType) => { // eslint-disable-line no-unused-vars
+const handleQuery = async (req, res, next, queryType) => {
     /** @type {string} */
     let result;
     /** @type {Error} */
@@ -357,7 +357,7 @@ const main = async () => {
     app.set("query parser", false);
     app.set("env", "production");
 
-    app.use((req, res, next) => {
+    app.use((_, res, next) => {
         res.set("X-Powered-By", "new-iwhois");
         next();
     });
@@ -398,7 +398,7 @@ Available routes:
     app.get("/apnic/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "apnic"));
     app.get("/lacnic/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "lacnic"));
     app.get("/radb/:whoisValue(*)", (req, res, next) => handleQuery(req, res, next, "radb"));
-    app.use((req, res, next) => {
+    app.use((_, res, next) => {
         res.set("Content-Type", "text/plain; charset=utf-8");
         res.status(404).send("Sorry, can't find that!");
         next();
