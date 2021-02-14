@@ -314,7 +314,7 @@ const main = async () => {
         db: (config.redisConfig.db + 1)
     });
 
-    rateLimitPoints = 2; // requests
+    rateLimitPoints = 4; // requests
     rateLimitDuration = 10; // seconds
     rateLimiter = new RateLimiterRedis({
         storeClient: redisRatelimitClient,
