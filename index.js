@@ -270,6 +270,9 @@ const handleQuery = async (req, res, next, queryType) => {
         result = result.replace(reg, "REDACTED");
     }
 
+    // curl moment
+    result = `${result}\n`;
+
     if (!isConnectionFailed) setCache(`${queryType}/${queryValue}`, result);
 
     res.set("Content-Type", "text/plain; charset=utf-8");
