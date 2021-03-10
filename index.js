@@ -29,6 +29,8 @@ const exitWithError = (err) => {
     }, 1000);
 };
 
+const strStrip = (str) => str.replace(/^(\s+)|(\s+)$/g, "");
+
 const constructIP = (reqip, reqips) => {
     let xfwip = (reqips && Array.isArray(reqips) ? reqips[0] : reqip);
     let host = (xfwip && xfwip !== reqip ? xfwip : reqip).replace(/^(::ffff:)/, "");
@@ -210,7 +212,7 @@ const handleQuery = async (req, res, next, queryType) => {
     /** @type {Error} */
     let error;
     /** @type {string[]} */
-    let whoisValues = req.params["whoisValue"].split(" ");
+    let whoisValues = strStrip(req.params["whoisValue"]).split(" ");
     let queryValue = whoisValues.slice(-1).join("").toUpperCase(); // why not `(-1)[0]`? well, if thats undefined we might get poof
     let queryOptions = whoisValues.slice(0, -1).join(" ");
 
