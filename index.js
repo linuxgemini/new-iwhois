@@ -8,6 +8,7 @@
 
 "use strict";
 
+const ipaddress = require("ip-address");
 const WHOIS = require("./libs/whois");
 const whois = new WHOIS();
 
@@ -30,6 +31,19 @@ const exitWithError = (err) => {
 };
 
 const strStrip = (str) => str.replace(/^(\s+)|(\s+)$/g, "");
+
+/**
+ * @param {string} str
+ */
+const getIPIdentifierHex = (str) => {
+    if (ipaddress.Address4.isValid(str)) {
+        return (new ipaddress.Address4(`${str}/24`)).startAddress().toHex().toUpperCase();
+    } else if (ipaddress.Address6.isValid(str)) {
+        return Buffer.from((new ipaddress.Address6(`${str}/64`)).startAddress().toByteArray()).toString("hex").toUpperCase();
+    } else {
+        return;
+    }
+};
 
 const constructIP = (reqip, reqips) => {
     let xfwip = (reqips && Array.isArray(reqips) ? reqips[0] : reqip);
@@ -335,8 +349,9 @@ const main = async () => {
      */
     rateLimiterMiddleware = (req, res, next) => {
         let { host } = constructIP(req.ip, req.ips);
+        let ipid = getIPIdentifierHex(host);
 
-        rateLimiter.consume(host)
+        rateLimiter.consume(ipid)
             .then((rateLimiterRes) => {
                 res.set("Retry-After", (rateLimiterRes.msBeforeNext / 1000));
                 res.set("X-Ratelimit-Limit", rateLimitPoints);
