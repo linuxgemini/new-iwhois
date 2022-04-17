@@ -20,7 +20,7 @@
         "quirk": "-C UTF-8 {{data}}"
     },
     "whois.lacnic.net": {
-        "encoding": "iso-8859-1",
+        "encoding": "utf-8",
         "quirk": "{{data}}"
     },
     "whois.museum": {
@@ -40,7 +40,7 @@
         "quirk": "{{data}}"
     },
     "whois.ax": {
-        "encoding": "iso-8859-1",
+        "encoding": "utf-8",
         "quirk": "{{data}}"
     },
     "whois.registro.br": {
@@ -48,7 +48,7 @@
         "quirk": "{{data}}"
     },
     "whois.cira.ca": {
-        "encoding": "iso-8859-1",
+        "encoding": "utf-8",
         "quirk": "{{data}}"
     },
     "whois.nic.ch": {
@@ -188,7 +188,7 @@
         "quirk": "{{data}}"
     },
     "whois.dns.pt": {
-        "encoding": "iso-8859-1",
+        "encoding": "utf-8",
         "quirk": "{{data}}"
     },
     "whois.registry.qa": {
