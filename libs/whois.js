@@ -96,6 +96,8 @@ class whoisClient {
         }
 
         for (const server of whoisServersRaw) {
+            if (server.match(/^(https?:)|(gophers?:)|(telnet:)|(ssh:)/g)) continue;
+
             let srv = server
                 .replace(/^(r?whois):\/\//, "")
                 .toLowerCase();
