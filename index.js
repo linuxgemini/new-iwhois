@@ -227,7 +227,7 @@ const handleQuery = async (req, res, next, queryType) => {
     let error;
     /** @type {string[]} */
     let whoisValues = strStrip(req.params["whoisValue"]).split(" ");
-    let queryValue = whoisValues.slice(-1).join("").toUpperCase(); // why not `(-1)[0]`? well, if thats undefined we might get poof
+    let queryValue = whoisValues.slice(-1).join(""); // why not `(-1)[0]`? well, if thats undefined we might get poof
     let queryOptions = whoisValues.slice(0, -1).join(" ");
 
     if (queryOptions.length > 0) queryValue = `${queryOptions} ${queryValue}`;

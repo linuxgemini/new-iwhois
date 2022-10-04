@@ -16,6 +16,7 @@ const net = require("net");
 class whoisClient {
     constructor() {
         this.__recurseLimit = 10;
+        this.__caseSensitiveList = require("./case-sensitive-list.json");
         this.__nicHandleWhoisList = require("./nic-handle-list.json");
         this.__domainWhoisList = require("./domain-whois-list.json");
         this.__extQuirks = require("./charset-list.json");
@@ -167,22 +168,25 @@ class whoisClient {
 
     /**
      * @param {string} data
+     * @param {boolean} ignoreOtherServers
      */
-    __whoisServerPass(data) {
+    __whoisServerPass(data, ignoreOtherServers = false) {
         let server = "whois.iana.org";
         data = data.toLowerCase();
 
-        for (const tld of Object.keys(this.__domainWhoisList)) {
-            if (data.endsWith(tld)) {
-                server = this.__domainWhoisList[tld];
-                break;
+        if (!ignoreOtherServers) {
+            for (const tld of Object.keys(this.__domainWhoisList)) {
+                if (data.endsWith(tld)) {
+                    server = this.__domainWhoisList[tld];
+                    break;
+                }
             }
-        }
 
-        for (const nicHandle of Object.keys(this.__nicHandleWhoisList)) {
-            if (data.endsWith(nicHandle)) {
-                server = this.__nicHandleWhoisList[nicHandle];
-                break;
+            for (const nicHandle of Object.keys(this.__nicHandleWhoisList)) {
+                if (data.endsWith(nicHandle)) {
+                    server = this.__nicHandleWhoisList[nicHandle];
+                    break;
+                }
             }
         }
 
@@ -195,10 +199,13 @@ class whoisClient {
      */
     __quirkPass(host, data) {
         let quirkFixedData;
-        if (this.__extQuirks[host]) quirkFixedData = this.__extQuirks[host].quirk.replace("{{data}}", data);
+        if (this.__extQuirks[host]) quirkFixedData = this.__extQuirks[host].quirk.replace("{{data}}", (quirkFixedData || data));
         if (this.__quirks[host]) quirkFixedData = this.__quirks[host].replace("{{data}}", (quirkFixedData || data));
         if (this.__asnQuirks[host] && data.match(/^AS\d{1,10}/i)) quirkFixedData = this.__asnQuirks[host].replace("{{data}}", (quirkFixedData || data).replace(/^AS/i, ""));
-        if (this.__ipQuirks[host] && this.__isIP(data)) quirkFixedData = this.__ipQuirks[host].replace("{{data}}", data);
+        if (this.__ipQuirks[host] && this.__isIP(data)) quirkFixedData = this.__ipQuirks[host].replace("{{data}}", (quirkFixedData || data));
+
+        // uppercase all queries if not excluded for case-sensitivity
+        if (!this.__caseSensitiveList[host]) quirkFixedData = (quirkFixedData || data).toUpperCase();
 
         return (quirkFixedData || data);
     }
@@ -252,7 +259,7 @@ class whoisClient {
      * @param {Array.<{host: string, port: number}>?} undoneRefs
      */
     async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevHosts = null, prevData = null, port = 43, undoneRefs = null) {
-        let host = (recursed > 0 ? currHost : this.__whoisServerPass(data));
+        let host = (recursed > 0 ? currHost : this.__whoisServerPass(data, true));
         let fixedData = this.__quirkPass(host, data);
         if (prevHosts === null) prevHosts = [host];
 

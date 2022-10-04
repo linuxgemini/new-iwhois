@@ -228,7 +228,7 @@
         "quirk": "{{data}}"
     },
     "whois.nic.tr": {
-        "encoding": "iso-8859-9",
+        "encoding": "utf-8",
         "quirk": "{{data}}"
     },
     "whois.twnic.net.tw": {
