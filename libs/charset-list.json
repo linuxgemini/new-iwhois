@@ -31,6 +31,18 @@
         "encoding": "iso-8859-1",
         "quirk": "{{data}}"
     },
+    "whois.nic.llyw.cymru": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.gov.scot": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.gov.wales": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
     "whois.aeda.net.ae": {
         "encoding": "utf-8",
         "quirk": "{{data}}"
@@ -135,7 +147,7 @@
         "encoding": "iso-2022-jp",
         "quirk": "{{data}}"
     },
-    "whois.domain.kg": {
+    "whois.kg": {
         "encoding": "cp1251",
         "quirk": "{{data}}"
     },
@@ -227,11 +239,19 @@
         "encoding": "utf-8",
         "quirk": "{{data}}"
     },
-    "whois.nic.tr": {
+    "whois.trabis.gov.tr": {
         "encoding": "utf-8",
         "quirk": "{{data}}"
     },
     "whois.twnic.net.tw": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.nic.ac.uk": {
+        "encoding": "utf-8",
+        "quirk": "{{data}}"
+    },
+    "whois.gov.uk": {
         "encoding": "utf-8",
         "quirk": "{{data}}"
     },

@@ -45,6 +45,8 @@ const main = async () => {
         switch (sp[1]) {
             case "WEB":
                 break;
+            case "RECURSIVE":
+                break;
             case "NONE":
                 break;
             case "AFILIAS":
