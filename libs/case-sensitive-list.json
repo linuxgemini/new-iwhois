@@ -1,5 +1,8 @@
 {
     "whois.trabis.gov.tr": {
         "isCaseSensitive": true
+    },
+    "whois.arin.net": {
+        "isCaseSensitive": true
     }
 }
