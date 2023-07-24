@@ -245,7 +245,7 @@ const handleQuery = async (req, res, next, queryType) => {
                     result = await whois.queryRecursive(queryValue);
                     break;
                 case "recursive-verbose":
-                    result = await whois.queryRecursiveVerbose(queryValue);
+                    result = await whois.queryRecursiveVerbose(queryValue, 0, null, null, null, 43, null, false);
                     break;
                 case "ripe":
                     result = await whois.queryRIPE(queryValue);

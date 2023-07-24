@@ -258,8 +258,8 @@ class whoisClient {
      * @param {number?} port
      * @param {Array.<{host: string, port: number}>?} undoneRefs
      */
-    async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevHosts = null, prevData = null, port = 43, undoneRefs = null) {
-        let host = (recursed > 0 ? currHost : this.__whoisServerPass(data, true));
+    async queryRecursiveVerbose(data, recursed = 0, currHost = null, prevHosts = null, prevData = null, port = 43, undoneRefs = null, ignorePredefinedServers = true) {
+        let host = (recursed > 0 ? currHost : this.__whoisServerPass(data, ignorePredefinedServers));
         let fixedData = this.__quirkPass(host, data);
         if (prevHosts === null) prevHosts = [host];
 
