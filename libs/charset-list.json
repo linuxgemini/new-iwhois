@@ -95,6 +95,10 @@
         "encoding": "utf-8",
         "quirk": "--charset=utf-8 {{data}}"
     },
+    "whois.punktum.dk": {
+        "encoding": "utf-8",
+        "quirk": "--charset=utf-8 {{data}}"
+    },
     "whois.tld.ee": {
         "encoding": "utf-8",
         "quirk": "{{data}}"
@@ -140,7 +144,7 @@
         "quirk": "{{data}}"
     },
     "whois.jprs.jp": {
-        "encoding": "iso-2022-jp",
+        "encoding": "utf-8",
         "quirk": "{{data}}"
     },
     "whois.nic.ad.jp": {
